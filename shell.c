@@ -10,17 +10,20 @@ extern char **environ;
 
 #define MAX_COMMAND_LENGTH 100
 
-void display_prompt() {
-    printf("simple_shell$ ");
-    fflush(stdout);
+void display_prompt(int is_piped) {
+    if (!is_piped) {
+        printf("simple_shell$ ");
+        fflush(stdout);
+    }
 }
 
-void run_shell() {
+void run_shell(const char *executable_name) {
     char command[MAX_COMMAND_LENGTH];
 
     while (1) {
         pid_t pid;
-	display_prompt();
+	int is_piped = isatty(STDIN_FILENO) == 0;
+	display_prompt(is_piped);
 
         if (fgets(command, sizeof(command), stdin) == NULL) {
             printf("\n");
@@ -32,7 +35,7 @@ void run_shell() {
         pid = fork();
 
         if (pid == -1) {
-            perror("Fork failed");
+            perror(executable_name);
             exit(EXIT_FAILURE);
         } else if (pid == 0) {
             char *args[2];
@@ -40,7 +43,7 @@ void run_shell() {
 	    args[1] = NULL;
 
             if (execve(command, args, environ) == -1) {
-                perror("./shell");
+                perror(executable_name);
                 _exit(EXIT_FAILURE);
             }
         } else {
@@ -49,6 +52,4 @@ void run_shell() {
 
         }
     }
-
-    printf("Exiting shell\n");
 }
