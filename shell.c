@@ -19,7 +19,8 @@ void run_shell() {
     char command[MAX_COMMAND_LENGTH];
 
     while (1) {
-        display_prompt();
+        pid_t pid;
+	display_prompt();
 
         if (fgets(command, sizeof(command), stdin) == NULL) {
             printf("\n");
@@ -28,13 +29,16 @@ void run_shell() {
 
         command[strcspn(command, "\n")] = '\0';
 
-        pid_t pid = fork();
+        pid = fork();
 
         if (pid == -1) {
             perror("Fork failed");
             exit(EXIT_FAILURE);
         } else if (pid == 0) {
-            char *args[] = {command, NULL};
+            char *args[2];
+	    args[0] = command;
+	    args[1] = NULL;
+
             if (execve(command, args, environ) == -1) {
                 perror("./shell");
                 _exit(EXIT_FAILURE);
