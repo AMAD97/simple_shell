@@ -55,6 +55,10 @@ void run_shell(const char *executable_name) {
         }
 
         args[arg_count] = NULL;
+        
+	if (strcmp(args[0], "exit") == 0) {
+            exit(EXIT_SUCCESS);
+        }
 
 
         pid = fork();
