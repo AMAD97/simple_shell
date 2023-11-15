@@ -1,67 +1,75 @@
 #include "shell.h"
 
 /**
- * _memset - Fills memory with a constant byte.
- * @s: Pointer to the memory area.
- * @b: The byte to fill *s with.
- * @n: The number of bytes to be filled.
+ * _strlen - Returns the length of a string.
+ * @s: The string whose length to check.
  *
- * Return: A pointer to the memory area s.
+ * Return: Integer length of string.
  */
-char *_memset(char *s, char b, unsigned int n)
+int _strlen(char *s)
 {
-	unsigned int i;
+	int i = 0;
 
-	for (i = 0; i < n; i++)
-		s[i] = b;
-	return (s);
+	if (!s)
+		return (0);
+
+	while (*s++)
+		i++;
+	return (i);
 }
 
 /**
- * ffree - Frees a string of strings.
- * @pp: String of strings.
+ * _strcmp - Performs lexicographic comparison of two strings.
+ * @s1: The first string.
+ * @s2: The second string.
+ *
+ * Return: Negative if s1 < s2, positive if s1 > s2, zero if s1 == s2.
  */
-void ffree(char **pp)
+int _strcmp(char *s1, char *s2)
 {
-	char **a = pp;
-
-	if (!pp)
-		return;
-
-	while (*pp)
-		free(*pp++);
-	free(a);
+	while (*s1 && *s2)
+	{
+		if (*s1 != *s2)
+			return (*s1 - *s2);
+		s1++;
+		s2++;
+	}
+	if (*s1 == *s2)
+		return (0);
+	else
+		return (*s1 < *s2 ? -1 : 1);
 }
 
 /**
- * _realloc - Reallocates a block of memory.
- * @ptr: Pointer to the previous malloc'ated block.
- * @old_size: Byte size of the previous block.
- * @new_size: Byte size of the new block.
+ * starts_with - Checks if needle starts with haystack.
+ * @haystack: String to search.
+ * @needle: The substring to find.
  *
- * Return: Pointer to the old block.
+ * Return: Address of the next character of haystack or NULL.
  */
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
+char *starts_with(const char *haystack, const char *needle)
 {
-	char *p;
+	while (*needle)
+		if (*needle++ != *haystack++)
+			return (NULL);
+	return ((char *)haystack);
+}
 
-	if (!ptr)
-		return (malloc(new_size));
+/**
+ * _strcat - Concatenates two strings.
+ * @dest: The destination buffer.
+ * @src: The source buffer.
+ *
+ * Return: Pointer to the destination buffer.
+ */
+char *_strcat(char *dest, char *src)
+{
+	char *ret = dest;
 
-	if (!new_size)
-		return (free(ptr), NULL);
-
-	if (new_size == old_size)
-		return (ptr);
-
-	p = malloc(new_size);
-	if (!p)
-		return (NULL);
-
-	old_size = old_size < new_size ? old_size : new_size;
-	while (old_size--)
-		p[old_size] = ((char *)ptr)[old_size];
-
-	free(ptr);
-	return (p);
+	while (*dest)
+		dest++;
+	while (*src)
+		*dest++ = *src++;
+	*dest = *src;
+	return (ret);
 }
