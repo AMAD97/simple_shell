@@ -1,49 +1,67 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <string.h>
+#include "shell.h"
 
-#define BUFFER_SIZE 1024
+/**
+ * _memset - Fills memory with a constant byte.
+ * @s: Pointer to the memory area.
+ * @b: The byte to fill *s with.
+ * @n: The number of bytes to be filled.
+ *
+ * Return: A pointer to the memory area s.
+ */
+char *_memset(char *s, char b, unsigned int n)
+{
+	unsigned int i;
 
-void display_prompt() {
-    printf("#cisfun$ ");
+	for (i = 0; i < n; i++)
+		s[i] = b;
+	return (s);
 }
 
-int main(void) {
-    char buffer[BUFFER_SIZE];
-    char *args[2]; /* Assuming commands have one word only */
+/**
+ * ffree - Frees a string of strings.
+ * @pp: String of strings.
+ */
+void ffree(char **pp)
+{
+	char **a = pp;
 
-    while (1) {
-        display_prompt();
+	if (!pp)
+		return;
 
-        if (fgets(buffer, BUFFER_SIZE, stdin) == NULL) {
-            printf("\n");
-            break; /* Exit on Ctrl+D (EOF) */
-        }
+	while (*pp)
+		free(*pp++);
+	free(a);
+}
 
-        buffer[strcspn(buffer, "\n")] = '\0'; /* Remove newline character */
+/**
+ * _realloc - Reallocates a block of memory.
+ * @ptr: Pointer to the previous malloc'ated block.
+ * @old_size: Byte size of the previous block.
+ * @new_size: Byte size of the new block.
+ *
+ * Return: Pointer to the old block.
+ */
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
+{
+	char *p;
 
-        args[0] = buffer;
-        args[1] = NULL;
+	if (!ptr)
+		return (malloc(new_size));
 
-        pid_t pid = fork();
+	if (!new_size)
+		return (free(ptr), NULL);
 
-        if (pid < 0) {
-            perror("Error forking");
-            exit(EXIT_FAILURE);
-        } else if (pid == 0) {
-            /* Child process */
-            if (execve(args[0], args, NULL) == -1) {
-                perror(args[0]); /* Print error message with program name */
-            }
-            exit(EXIT_FAILURE); /* If execve fails */
-        } else {
-            /* Parent process */
-            wait(NULL);
-        }
-    }
+	if (new_size == old_size)
+		return (ptr);
 
-    return EXIT_SUCCESS;
+	p = malloc(new_size);
+	if (!p)
+		return (NULL);
+
+	old_size = old_size < new_size ? old_size : new_size;
+	while (old_size--)
+		p[old_size] = ((char *)ptr)[old_size];
+
+	free(ptr);
+	return (p);
 }
