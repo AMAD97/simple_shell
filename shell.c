@@ -26,9 +26,12 @@ void run_shell(const char *executable_name) {
 	display_prompt(is_piped);
 
         if (fgets(command, sizeof(command), stdin) == NULL) {
-            printf("\n");
-            break;
-        }
+	        if (!is_piped) {
+        	    printf("\n");
+        	}
+       		break;
+    	}
+
 
         command[strcspn(command, "\n")] = '\0';
 
@@ -49,7 +52,7 @@ void run_shell(const char *executable_name) {
         } else {
             int status;
             waitpid(pid, &status, 0);
-
+	    
         }
     }
 }
