@@ -59,6 +59,15 @@ void run_shell(const char *executable_name) {
 	if (strcmp(args[0], "exit") == 0) {
             exit(EXIT_SUCCESS);
         }
+	
+        if (strcmp(args[0], "env") == 0) {
+            char **env_var = environ;
+            while (*env_var != NULL) {
+                printf("%s\n", *env_var);
+                env_var++;
+            }
+            continue;
+        }
 
 
         pid = fork();
